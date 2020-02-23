@@ -33,6 +33,12 @@ namespace HP_CLI
         public string XSLTFile { get; set; }
         [Option(CommandOptionType.SingleValue, ShortName = "t", LongName = "test", Description = "kevin file testing", ValueName = "test file", ShowInHelpText = true)]
         public string myselfTesting { get; set; }
+       
+        [Option(CommandOptionType.SingleValue, ShortName = "d", LongName = "database", Description = "Database Management", ValueName = "test file", ShowInHelpText = true)]
+        public string DatbabaseManagement { get; set; }
+
+
+
         protected string FileNameSuffix { get; set; }
         protected virtual Task<int> OnExecute(CommandLineApplication app)
         {
@@ -215,12 +221,15 @@ namespace HP_CLI
             Console.WriteLine("[OUTPUT Myself] - Getting all information.");
             if (!string.IsNullOrEmpty(myselfTesting))
             {
-
             }
             else
             {
-
             }
+        }
+
+        protected void DatabaseMangaement(string msg)
+        {
+
         }
 
         protected void Output(string data)

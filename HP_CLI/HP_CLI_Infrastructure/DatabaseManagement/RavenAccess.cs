@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HP_CLI.CMD
+namespace HP_CLI_Infrastructure
 {
-    public class iOculysCmdBase
+    public class RavenAccess
     {
     }
 }
