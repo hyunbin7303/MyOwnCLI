@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HP_CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "login -u \"Kevin\" -p \"kevin1234\""
+    }
+  }
+}
