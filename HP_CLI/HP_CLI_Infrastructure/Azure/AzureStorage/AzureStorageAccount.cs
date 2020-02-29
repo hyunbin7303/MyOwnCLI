@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -30,44 +31,74 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
         //A storage account provides a unique namespace in Azure for your data.
         private static CloudStorageAccount cloudStorageAccount;
         private static CloudBlobClient blobClient;
-        private static string connectionString =
-            "DefaultEndpointsProtocol=https;AccountName=kevinazurestorage;AccountKey=hRSBs4SLf/lCs78U0UZnK0cbGnohaeGug/U4rvk96m4xTHvItY0MdBDiU/Oswy8NQvakntk8Si4yg2ClumUNCg==;EndpointSuffix=core.windows.net";
+        private static string connectionString = "";
         public void SetupStorageAccount()
         {
             StorageCredentials storageCredentials = new StorageCredentials("", "");
             cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
         }
-        
-        public void BlobClient_Testing()
+
+        public Tuple<string, string> fileLocation()
         {
-            blobClient = cloudStorageAccount.CreateCloudBlobClient();
-            // A container in the storage account used via BlobContainerClient
-            // A blob in a container used via BlobClient
-            string connStr = "";
-            string blobName = "";
-            string filePath = "";
-            string connectionString = Environment.ExpandEnvironmentVariables("AZURE_STORAGE_CONNECTION_STRING");
-            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-            string containerName = "quickstartblobs" + Guid.NewGuid().ToString();
-            BlobContainerClient containerClient = blobServiceClient.CreateBlobContainer(containerName);
-
-
-
-            string localPath = "./data/";
+            string localPath = "C:\\KevinAppTesting";
             string fileName = "quickstart" + Guid.NewGuid().ToString() + ".txt";
             string localFilePath = Path.Combine(localPath, fileName);
+            return Tuple.Create(fileName,localFilePath);
+        }
 
-            File.WriteAllText(localFilePath, "Hello, World");
-            BlobClient blobClient = containerClient.GetBlobClient(fileName);
-
-            Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
-
+        public BlobServiceClient GetBlobServiceClient()
+        {
+            string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+            return blobServiceClient;
+        }
+        public void BlobClient_Testing()
+        {
+            string containerName = "quickstartblobs" + Guid.NewGuid().ToString();
+            BlobContainerClient containerClient = GetBlobServiceClient().CreateBlobContainer(containerName);
+            
+            File.WriteAllText(fileLocation().Item2, "Hello, World");
+            BlobClient blobClientTesting = containerClient.GetBlobClient(fileLocation().Item1);
+            Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClientTesting.Uri);
             // Open the file and upload its data
-            using FileStream uploadFileStream = File.OpenRead(localFilePath);
-            blobClient.UploadAsync(uploadFileStream, true);
+            
+            using FileStream uploadFileStream = File.OpenRead(fileLocation().Item2);
+            blobClientTesting.Upload(uploadFileStream, true);
             uploadFileStream.Close();
+        }
+
+        public void EnmeratingBlobs()
+        {
+            // Get a connection string to our Azure Storage account.
+            string connectionString = "<connection_string>";
+            string containerName = "sample-container";
+            string filePath = "hello.jpg";
+
+            // Get a reference to a container named "sample-container" and then create it
+            BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
+            container.Create();
+
+            // Upload a few blobs so we have something to list
+            container.UploadBlob("first", File.OpenRead(filePath));
+            container.UploadBlob("second", File.OpenRead(filePath));
+            container.UploadBlob("third", File.OpenRead(filePath));
+
+            // Print out all the blob names
+            foreach (BlobItem blob in container.GetBlobs())
+            {
+                Console.WriteLine(blob.Name);
+            }
+        }
+        // Testing for Async and sync
+
+
+        // Authenticating with Azure.Identity.
+        public void Authentication()
+        {
 
         }
+
+
         
     }
     

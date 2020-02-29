@@ -1,1 +1,9 @@
-﻿
+﻿Key concepts
+* Blob Storage is designed for:
+Serving images or documents directly to a browser.
+Storing files for distributed access.
+Streaming video and audio.
+Writing to log files.
+Storing data for backup and restore, disaster recovery, and archiving.
+Storing data for analysis by an on-premises or Azure-hosted service.
+
