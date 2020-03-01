@@ -18,7 +18,7 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
 
 
 
-    public class BlobStorage
+    public class BlobStorage : AzureDefault
     {
         // Object storage solution for the cloud.
         // Optimized for storing massive amounts of unstructured data.
@@ -29,14 +29,15 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
 
         //Blob storage offers 3 types of resource.
         //A storage account provides a unique namespace in Azure for your data.
-        private static CloudStorageAccount cloudStorageAccount;
-        private static CloudBlobClient blobClient;
-        private static string connectionString = "";
-        public void SetupStorageAccount()
-        {
-            StorageCredentials storageCredentials = new StorageCredentials("", "");
-            cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
-        }
+        //public void SetupStorageAccount()
+        //{
+        //    Setup("CHECK");
+        //    StorageCredentials storageCredentials = new StorageCredentials("", "");
+        //    cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
+        //}
+
+        private static CloudBlobClient blobClient = null;
+
 
         public Tuple<string, string> fileLocation()
         {
@@ -56,12 +57,10 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
         {
             string containerName = "quickstartblobs" + Guid.NewGuid().ToString();
             BlobContainerClient containerClient = GetBlobServiceClient().CreateBlobContainer(containerName);
-            
             File.WriteAllText(fileLocation().Item2, "Hello, World");
             BlobClient blobClientTesting = containerClient.GetBlobClient(fileLocation().Item1);
             Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClientTesting.Uri);
             // Open the file and upload its data
-            
             using FileStream uploadFileStream = File.OpenRead(fileLocation().Item2);
             blobClientTesting.Upload(uploadFileStream, true);
             uploadFileStream.Close();
@@ -73,16 +72,13 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
             string connectionString = "<connection_string>";
             string containerName = "sample-container";
             string filePath = "hello.jpg";
-
             // Get a reference to a container named "sample-container" and then create it
             BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
             container.Create();
-
             // Upload a few blobs so we have something to list
             container.UploadBlob("first", File.OpenRead(filePath));
             container.UploadBlob("second", File.OpenRead(filePath));
             container.UploadBlob("third", File.OpenRead(filePath));
-
             // Print out all the blob names
             foreach (BlobItem blob in container.GetBlobs())
             {

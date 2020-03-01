@@ -8,9 +8,15 @@ using HP_CLI_Infrastructure;
 // Defines the jobs the software is supposed to do and directs
 namespace HP_CLI_Application
 {
+    public struct Point
+    { }
+
+
     public class Class1
     {
 
+        //public override bool Equals(object? obj) =>
+        //    (obj is Point otherPT) ? this == otherPT : false;
 
         // Currently just sample name.
         public bool CallStoredProcedure(string dbname, string storedProcedure, Dictionary<string,string> paras)
