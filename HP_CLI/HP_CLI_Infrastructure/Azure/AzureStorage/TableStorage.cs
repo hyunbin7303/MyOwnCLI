@@ -23,7 +23,9 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
     {
         public CloudTable Createtable(string tableName)
         {
-            CloudStorageAccount storageAccount = 
+            //CloudStorageAccount storageAccount = 
+            CloudTable ct = new CloudTable(new Uri("hhahahahahh"));
+            return ct;
         }
     }
 }
