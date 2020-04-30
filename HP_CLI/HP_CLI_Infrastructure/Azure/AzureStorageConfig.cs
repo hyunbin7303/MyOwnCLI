@@ -27,7 +27,6 @@ namespace HP_CLI_Infrastructure.Azure
             //    .Build();
             //configuration.GetConnectionString("ConnectionStrings");
 
-
             //var Configuration = new ConfigurationBuilder()
             //    .SetBasePath(Directory.GetCurrentDirectory())
             //    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

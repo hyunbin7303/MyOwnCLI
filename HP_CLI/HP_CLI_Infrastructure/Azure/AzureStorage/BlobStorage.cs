@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -20,6 +21,10 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
     // Azure Tables - A NoSQL store for schemaless storage of structured data.
     public class BlobStorage : AzureDefault
     {
+
+
+
+
         public BlobStorage()
         {
             //    service = _account != null ? new TaskDataService(clientId, _account) : new TaskDataService(clientId);
@@ -41,12 +46,55 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
         }
 
         public string ConnectionString { get; set; } = AzureStorageConfig.ConnectionString();
-        public BlobServiceClient GetBlobServiceClient()
+
+
+        public void UploadFileToBlob(string containerName, string localPath, string fileName)
         {
-            string connectionString = ConnectionString;
-            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-            return blobServiceClient;
+            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            string localFilePath = Path.Combine(localPath, fileName);
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+            using FileStream uploadFileStream = File.OpenRead(localFilePath);
+           blobClient.Upload(uploadFileStream, true);
+            uploadFileStream.Close();
+            //return await Task.FromResult(true);
         }
+
+        // specify a number of options to manage how results are returned from Azure storage.
+        public async Task<bool> ListBlobs(string containerName)
+        {
+            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await foreach (BlobItem blobItem in containerClient.GetBlobsAsync())
+            {
+                Console.WriteLine("\t" + blobItem.Name);
+            }
+            return await Task.FromResult(true);
+        }
+
+        public void ListBlobsTest(string containerName)
+        {
+            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            foreach (BlobItem blobItem in containerClient.GetBlobs())
+            {
+                Console.WriteLine("\t" + blobItem.Name);
+            }
+        }
+
+        public void updateUsingMemoryStream()
+        {
+            const string content = "HAHASJFHFLKSHAJFSLAFHKSALJ";
+            byte[] byteArray = Encoding.UTF8.GetBytes(content);
+            MemoryStream stream = new MemoryStream(byteArray);
+            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
+            BlockBlobClient blobClient =
+                blobServiceClient.GetBlobContainerClient("democontainer").GetBlockBlobClient("");
+            blobClient.Upload(stream);
+            Console.WriteLine("DONE");
+        }
+
+
         protected void EnmeratingBlobs()
         {
             // Get a connection string to our Azure Storage account.
@@ -66,28 +114,11 @@ namespace HP_CLI_Infrastructure.Azure.AzureStorage
                 Console.WriteLine(blob.Name);
             }
         }
-        public void UploadFileToBlob(string containerName, string localPath, string fileName)
+        public void DownloadBlobs(string containerName)
         {
-            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
-            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-            string localFilePath = Path.Combine(localPath, fileName);
-            BlobClient blobClient = containerClient.GetBlobClient(fileName);
-            using FileStream uploadFileStream = File.OpenRead(localFilePath);
-           blobClient.Upload(uploadFileStream, true);
-            uploadFileStream.Close();
-            //return await Task.FromResult(true);
+
         }
 
-        public async Task<bool> ListBlobs(string containerName)
-        {
-            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
-            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-            await foreach (BlobItem blobItem in containerClient.GetBlobsAsync())
-            {
-                Console.WriteLine("\t" + blobItem.Name);
-            }
-            return await Task.FromResult(true);
-        }
 
         //https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/stackalloc
         //public void testing()

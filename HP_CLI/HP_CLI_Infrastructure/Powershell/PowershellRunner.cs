@@ -20,6 +20,12 @@ namespace HP_CLI_Infrastructure.Powershell
 
         }
 
+        public static void PS_UpdateDependencies()
+        {
+            // Run UpdateDependencies script in here.
+
+        }
+
         public void OpenWithArguments()
         {
             Process.Start("IExplorer.exe", "www.google.com");

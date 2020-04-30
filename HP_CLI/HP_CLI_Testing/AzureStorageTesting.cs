@@ -25,6 +25,15 @@ namespace HP_CLI_Testing
         }
 
         [Test]
+        public void ListBlobTest()
+        {
+            BlobStorage test = new BlobStorage();
+            test.ListBlobsTest("democontainer");
+        }
+
+
+
+        [Test]
         public void ListBlobsInContainerTest()
         {
             BlobStorage test = new BlobStorage();
